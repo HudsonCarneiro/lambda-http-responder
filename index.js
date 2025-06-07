@@ -1,39 +1,31 @@
-exports.handler = async (event) => {
-    const headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type,Authorization",
-        "Access-Control-Allow-Methods": "GET,POST,OPTIONS"
-    };
+export const handler = async (event) => {
+  try {
+      console.log("Evento recebido:", JSON.stringify(event));
 
-    if (event.httpMethod === "OPTIONS") {
-        return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({ message: "Pré-verificação CORS OK" }),
-        };
-    }
+      const response = {
+          statusCode: 200,
+          headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Headers": "*",
+              "Access-Control-Allow-Methods": "*",
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+              message: "Olá do Lambda! Sua função está funcionando 🚀"
+          }),
+      };
 
-    let requestBody = {};
-    if (event.body) {
-        try {
-            requestBody = JSON.parse(event.body);
-        } catch (err) {
-            console.error("Erro ao parsear body:", err);
-        }
-    }
+      return response;
+  } catch (error) {
+      console.error("Erro:", error);
 
-    const response = {
-        message: "Requisição recebida com sucesso!",
-        method: event.httpMethod,
-        path: event.path,
-        requestBody: requestBody,
-        queryParams: event.queryStringParameters,
-    };
-
-    return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify(response),
-    };
+      return {
+          statusCode: 500,
+          headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ error: "Erro interno no servidor" }),
+      };
+  }
 };
-
